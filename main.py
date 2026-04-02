@@ -30,6 +30,7 @@ def sauvegarder_config(data):
 
 config = charger_config()
 SIGNATURE_PATH = config.get("signature", "")
+DOSSIER_PDF = config.get("dossier_pdf", DOSSIER_PDF)
 
 # ---------------------------
 # Choisir fichier signature
@@ -56,6 +57,9 @@ def choisir_dossier():
     if dossier:
         DOSSIER_PDF = dossier
         label_dossier.config(text=dossier)
+        # Mise à jour config immédiatement
+        config["dossier_pdf"] = DOSSIER_PDF
+        sauvegarder_config(config)
 
 # ---------------------------
 # Génération PDF
@@ -237,7 +241,7 @@ def generer_quittance():
     c.save()
 
     # Nom du fichier texte
-    fichier_txt =  f"mail_quittance_{mois}_{annee}_{nom_locataire_clean}.txt"
+    fichier_txt = os.path.join(DOSSIER_PDF, f"mail_quittance_{mois}_{annee}_{nom_locataire_clean}.txt")
 
     # Contenu du mail
     contenu_mail = f"""
@@ -356,14 +360,14 @@ frame_dossier = tk.Frame(root)
 frame_dossier.grid(row=3,column=0,pady=10)
 tk.Button(frame_dossier,text="Choisir dossier PDF",command=choisir_dossier).grid(row=0,column=0)
 label_dossier = tk.Label(frame_dossier,text=DOSSIER_PDF)
-label_dossier.grid(row=0,column=1,padx=10)
+label_dossier.grid(row=4,column=0,padx=10)
 
 # -- Choisir signature
 frame_signature = tk.Frame(root)
-frame_signature.grid(row=4, column=0, pady=10)
+frame_signature.grid(row=5, column=0, pady=10)
 tk.Button(frame_signature,text="Choisir signature",command=choisir_signature).grid(row=0, column=0)
 label_signature = tk.Label(frame_signature,text=os.path.basename(SIGNATURE_PATH) if SIGNATURE_PATH else "Aucune signature")
-label_signature.grid(row=0, column=1, padx=10)
+label_signature.grid(row=6, column=0, padx=10)
 
 # -- Bouton génération
 tk.Button(root,text="Générer la quittance",command=generer_quittance,width=25).grid(pady=20)
